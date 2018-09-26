@@ -1,0 +1,19 @@
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+# COMPILED FILES
+*.pyc
+__pycache__/*
+# NOT SHAREABLE FILES
+bash_commands.txt
+config.py
+
+#
+*.nc
+*.grid
