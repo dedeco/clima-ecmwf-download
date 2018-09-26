@@ -32,9 +32,8 @@ _This commands above are for linux and macOsx_
 ## Install and run script
 ```console
 (climaecwfenv) $ cd ~/projects
-(climaecwfenv) $ mkdir clima-ecwf-data
-(climaecwfenv) $ cd clima-ecwf-data/
-(climaecwfenv) $ pip install -r requirements.txt or pip install --user https://software.ecmwf.int/wiki/download/attachments/56664858/ecmwf-api-client-python.tgz
+(climaecwfenv) $ git clone https://github.com/dedeco/clima-ecmwf-download.git
+(climaecwfenv) $ pip install https://software.ecmwf.int/wiki/download/attachments/56664858/ecmwf-api-client-python.tgz
 (climaecwfenv) $ ptyhon request_files.py
 ```
 
