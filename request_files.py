@@ -4,7 +4,7 @@ from ecmwfapi import ECMWFDataServer
 server = ECMWFDataServer()
  
 def retrieve_interim_sfc():
-    """      
+    """
        A function to demonstrate how to iterate efficiently over several years and months etc    
        for a particular interim_request.     
        Change the variables below to adapt the iteration to your needs.
@@ -25,10 +25,10 @@ def retrieve_interim_sfc():
             lastDate = '%04d%02d%02d' % (year, month, numberOfDays)
             target = "_interim_daily_grid_075_sfc_%04d%02d.nc" % (year, month)
             requestDates = (startDate + "/TO/" + lastDate)
-            interim_request(requestDates, target,"sfc",params, time, step, levelist=None)
+            interim_request(requestDates, target,"sfc",params, time, step, None)
 
 def retrieve_interim_pl():
-    """      
+    """
        A function to demonstrate how to iterate efficiently over several years and months etc    
        for a particular interim_request.     
        Change the variables below to adapt the iteration to your needs.
@@ -50,10 +50,11 @@ def retrieve_interim_pl():
             lastDate = '%04d%02d%02d' % (year, month, numberOfDays)
             target = "_interim_daily_grid_075_pl_%04d%02d.nc" % (year, month)
             requestDates = (startDate + "/TO/" + lastDate)
-            interim_request(requestDates, target,"pl",params, time, step=None, levelist)
+            interim_request(requestDates, target,"pl",params, time, None, levelist)
+
 
 def interim_request(requestDates, target, levtype, params, time, step=None, levelist=None):
-    """      
+    """
         An ERA interim request for analysis surface level data.
     """
     d = {
@@ -75,11 +76,11 @@ def interim_request(requestDates, target, levtype, params, time, step=None, leve
     if step:
         d["step"] = step             # The ERA-Interim dataset contains analyses (four times per day, at 00:00, 06:00, 12:00 and 18:00), as well as forecasts (from 00:00 and 12:00, with 3, 6, 9, and 12-hour steps, and more, into the future), as shown below.
 
-    if levellist:
-        d["levelist"] = levellist    # levels, required only with levtype:pl and levtype:ml 
+    if levelist:
+        d["levelist"] = levelist    # levels, required only with levtype:pl and levtype:ml 
 
     server.retrieve(d)
-        
+
 if __name__ == '__main__':
     #retrieve_interim_sfc()
     retrieve_interim_pl()
