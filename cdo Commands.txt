@@ -1,0 +1,3 @@
+cdo Commands
+
+cdo -b F64 mergetime  _interim_daily_grid_075_sfc_*.nc  _interim_daily_grid_075_sfc_all.nc

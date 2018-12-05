@@ -1,0 +1,20 @@
+
+
+Pressure
+
+    lat: 41 (0 até -30)
+    lon: 81 (300 até 360)
+    lev: 37
+    time: 4 per day (0,6,12,18)
+
+    variables: 14
+
+Surface
+
+
+    lat: 41 (0 até -30)
+    lon: 81 (300 até 360)
+    time: 4 per day (0,6,12,18)
+
+    variables: 77
+
