@@ -3,6 +3,34 @@ import calendar
 from ecmwfapi import ECMWFDataServer
 server = ECMWFDataServer()
  
+
+import os
+import collections
+
+def getfiles(type='sfc'):
+    regs = {}
+    for y in range(2006,2016+1):
+        regs[y] = []
+    for file in os.listdir("./"):
+        if file.endswith(".nc"):
+            x = file.split('_')
+            if x[5] == type:
+                year = int(x[6].split('.')[0][:4])
+                mo = int(x[6].split('.')[0][4:])
+                if regs.get(year,0):
+                    regs[year].append(mo)
+                else:
+                    regs[year] = []
+                    regs[year].append(mo)
+    d = collections.OrderedDict(sorted(regs.items()))
+    for k,v in d.items():
+        v.sort()
+        d[k] = [i for i in range(1,13) if i not in v]
+    print (d)
+    return d
+
+
+
 def retrieve_interim_sfc():
     """
        A function to demonstrate how to iterate efficiently over several years and months etc    
@@ -18,8 +46,11 @@ def retrieve_interim_sfc():
     yearEnd = 2014
     months = [1,2,3,4,5,6,7,8,9,10,11,12] 
 
+    year_mo = getfiles('sfc')
 
-    for year in list(range(yearStart, yearEnd + 1)):
+    #for year in list(range(yearStart, yearEnd + 1)):
+    #    for month in months:
+    for year, months in year_mo.items():
         for month in months:
             startDate = '%04d%02d%02d' % (year, month, 1)
             numberOfDays = calendar.monthrange(year, month)[1]
@@ -39,12 +70,14 @@ def retrieve_interim_pl():
     params = "60.128/129.128/130.128/131.128/132.128/133.128/135.128/138.128/155.128/157.128/203.128/246.128/247.128/248.128"
     time = "00/06/12/18"
     step = None
-    yearStart = 2013
+    yearStart = 2016
     yearEnd = 2016
     months = [1,2,3,4,5,6,7,8,9,10,11,12] 
     levelist = "1/2/3/5/7/10/20/30/50/70/100/125/150/175/200/225/250/300/350/400/450/500/550/600/650/700/750/775/800/825/850/875/900/925/950/975/1000"
 
-    for year in list(range(yearStart, yearEnd + 1)):
+    year_mo = getfiles('pl')
+
+    for year, months in year_mo.items():
         for month in months:
             startDate = '%04d%02d%02d' % (year, month, 1)
             numberOfDays = calendar.monthrange(year, month)[1]
@@ -54,14 +87,14 @@ def retrieve_interim_pl():
             interim_request(requestDates, target,"pl",params, time, None, levelist)
 
 
-def interim_request(requestDates, target, levtype, params, time, step=None, levelist=None):
+def interim_request(requestDates, target, levtype, params, time, step=None, levelist=None, ttype='an'):
     """
         An ERA interim request for analysis surface level data.
     """
     d = {
         "class": "ei",
         "stream": "oper",
-        "type": "an",               # analysis (versus forecast, fc)
+        "type": ttype,               # analysis (versus forecast, fc)
         "dataset": "interim",
         "date": requestDates,       # dates, set automatically from above
         "expver": "1",
@@ -71,7 +104,7 @@ def interim_request(requestDates, target, levtype, params, time, step=None, leve
         "format": "netcdf",         # Optional. Output in NetCDF format. Requires that you also specify 'grid'. If not set, data is delivered in GRIB format, as archived.
         "target": target,           # output file name, set automatically from above
         "time": time,               # times of analysis (with type:an), or initialization time of forecast (with type:fc)
-        "grid": "0.5/0.5"         #Optional for GRIB, required for NetCDF. The horizontal resolution in decimal degrees. If not set, the archived grid as specified in the data documentation is used.
+        "grid": "0.50/0.50"         #Optional for GRIB, required for NetCDF. The horizontal resolution in decimal degrees. If not set, the archived grid as specified in the data documentation is used.
     }
 
     if step:
@@ -80,8 +113,36 @@ def interim_request(requestDates, target, levtype, params, time, step=None, leve
     if levelist:
         d["levelist"] = levelist    # levels, required only with levtype:pl and levtype:ml 
 
+    #print(d)
+
     server.retrieve(d)
+
+
+def retrieve_dly_tot_prcp():
+
+    """
+       A function to demonstrate how to iterate efficiently over several years and months etc    
+       for a particular interim_request.     
+       Change the variables below to adapt the iteration to your needs.
+       You can use the variable 'target' to organise the requested data in files as you wish.
+       In the example below the data are organised in files per month. (eg "interim_daily_201510.nc")
+    """
+    params = "228.128"
+    time = "00/12"
+    step = "12"
+
+    year_mo = getfiles('sfc')
+
+    for year, months in year_mo.items():
+        for month in months:
+            startDate = '%04d%02d%02d' % (year, month, 1)
+            numberOfDays = calendar.monthrange(year, month)[1]
+            lastDate = '%04d%02d%02d' % (year, month, numberOfDays)
+            target = "dly_tot_prcp_grid_050_sfc_%04d%02d.nc" % (year, month)
+            requestDates = (startDate + "/TO/" + lastDate)
+            interim_request(requestDates, target,"sfc",params, time, step, None, ttype='fc')   
 
 if __name__ == '__main__':
     #retrieve_interim_sfc()
     retrieve_interim_pl()
+    #retrieve_dly_tot_prcp()
